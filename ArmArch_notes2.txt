@@ -1,0 +1,46 @@
+#this is ARM notes pt2
+*Stack and Subroutines:
+    One good use for stacks in to make an enviorment for subroutines:
+	this allows for you to basically save where a stack was before the subroutine:
+	    If you wanna preserve, the data on the register will be added to a stack,
+	    the subroutine runs and when it ends,
+	    the register data before the subroutine will then pop off#before the stack returns to caller
+	Import Ex()>
+	
+	    STMFD sp!,{r1-r2 lr}	;this save the data from the registers
+	    {Code Of Subroutine}	;this is the subroutine code
+	    LMDFD sp!,{r1-r2 pc}	;returns the stored data from the register
+
+	Exit()<
+#*
+
+		|SIDE------------Note|
+
+Book jus dropped of sum super high tech. TIme to get technical
+Ok, if the pop instruction has the 'S' bit with the '^' symbol then transferring the PC reg while in privileged mode
+will also copy save SPSR to the previous mode CPSR, returning to whatever mode was before
+!!!!!With the execptions of SWI and IRQ
+
+*#
+
+*Software Interruptions:
+
+    SWI is made to generate software interruptions,
+    after that happens ARM changes to SVC mode,
+    then executes from the SVC vector addresss(0x08):,
+	this will execute the SWI handler
+    #mane this is usally how a system call talks to the os-kernal, yo 64bit system trying to get info from the 32-bit system	
+
+*PSR Transfer instructions:
+
+    MRS\MSR allows contents CSPR/SPSR to be transferred from status regs to gen purpose regs:
+	it can be the whole flags its self or condition bits
+#people mainly do this to change the processor mode while in priviledge mode
+    Import Ex()>
+
+	MRS(<condition>) Rd, <psr>	; Rd = <psr>
+	MSR(<condition>) <psr>, rm      ;<psr> = rm
+
+    Exit()<
+
+#this about to get its own notes bc its sum crazy CoProcessors

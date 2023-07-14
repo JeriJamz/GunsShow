@@ -1,0 +1,275 @@
+#this is notes on ARM arcitechture
+'ARM Processor Modes'
+    'USR':Unprivlage User Mode
+    'SYS':System mode using same set of registers of user mode
+    'FIQ':Fast interupt request processing mode
+    'IRQ':Normal interupt request processing mode
+    'SVC':Supervisor on request mode('SWI':Software Interupt Mode)
+    'ABT':Data exception abort mode
+    'UND':Undefined instruction except mode
+ARM CPU Registers
+    ARM got a lot of regis:
+	37 in total
+	all are 32-bit wide
+    (1) Dedicated Program Counter(PC)
+    (1)Current Progarm Status Register(CPSR)
+    (5)Dedicated Saved Program Status Register(DSPR)
+    (30) General Purpose Register
+    
+    Regs are broke into banks:
+	Which modes dictate which banks you can access
+
+    I get this right R0-R12 are one bank
+    R13(Stack Pointer),R14(Link Register), Saved Program Status Register are one bank
+    R15(Program Counter),Current Progarm Status Register are also one bank
+
+General Registers:
+#im tryin to copy an image from the book
+|USR|SYS|SVC|ABT|UND|IRQ|FIQ|
+-----------------------------
+	  R0-R7
+-----------------------------
+	  R8-R12     |R8-R12
+-----------------------------
+|  R13  |R13|R13|R13|R13|R13|
+-----------------------------
+|  R14  |R14|R14|R14|R14|R14|
+-----------------------------
+           R15               
+-----------------------------
+          CSPR
+-----------------------------
+        |SPSR|SPSR|SPSR|SPSR|
+-----------------------------
+
+#This is also another image im trying to copy from the book
+
+Import(Register_Banks_ARM_Processor)>
+    31:'N'(Negative/Less Than)
+    30:'Z'(Zero)
+    29:'C'(Carry/Burrow/Extend)
+    28:'V'(OverFlow)
+    27:'Q'(Sticky OverFlow)
+    26-25:''(IT 1:0)
+    24:'J'(Java State Bit)
+    23-20:'DNM'()
+    19-16:'GE[3:0]'(Greater Than Equal To)
+    15-10:'IT[7:2]'()
+    9:'E'(Data edianness bit)
+    8:'A'(Impercise abort data bit)
+    7:'I'(IRQ Disable)
+    6:'F'(FIQ Disable)
+    5'T'(Thumb State Bit)
+    4-0:'M[4:0]'(Mode Bits)
+
+Exit()<
+
+   User and System modes share the same regs(R0-R12):
+      These regs are in the same bank:
+	   except FIQ:
+	      it has it owns regs   R8-R12
+   Each mode has it owns:
+	1.)Stack Pointer(R13)
+	2.)Link Register(R14)
+
+   The Program Counter(R15) and Current Status Register(CPSR) are all in the same mode
+
+   Each Privalge mode(SVC FIQ) has its own Saved Status Register(SPSR)
+
+   In the CSPR there are some condition bits:
+	NZCV:are the condition bits
+	I/F: are interupt mask
+	T: Thumb State
+	M[0:4]: are processor mode bits
+
+   These should be the memory address or how to call some of these modes:
+	USR: 10000(0x10)
+	FIQ: 10001(0x11)
+	IRQ: 10010(0x12)
+	SVC: 10011(0x13)
+	ABT: 10111(0x17)
+	UND: 11011(0x1B)
+    	SYS: 11111(0x1F)
+
+    something that makes SYS mode special is that u can access the user mode registers(R13\R14) with privaliage#stack pointer and Link register
+#'ISR'(Iterrupt Serice Routine) is the method that handles the interrupts
+
+*Instruction Pipeline:
+
+    The instruction Pipeline controls the flow of instruction:
+	It dectate really how many instructions can be processed
+	like multi threading
+    Most ARM Processor come in three stages:
+	Fetch(PC)#Fetch the instruction
+	Decode(PC-4)#Decode the instructions to the registers
+	Execute(PC-8)#Execute the Instruction
+    The Program Counter Points to the instruction on que or being fetched:
+	This changes how you manipulate the stack order and how data is being show to you
+#*when calling a fucntion from BL or when trying to call an interrupt flag the return address is the PC-4
+Some Flags are gonna pull from address PC-8*#
+
+*Condition Flags and Conditions:
+    
+    'CPSR' 4 Highest bits are Conditions flags:
+	'N'(Negative)
+	'V'(OverFlow)
+	'Z'(Zero)
+	'C'(Carry Bit)
+    Condition Flags are set by comparison and TST Ops
+    Regular data flow does not effect the condtion flags you gotta add the 'S' bit to change it
+#gonna try and import an example from the book to hel[
+    Import EX()>
+
+	ADD r0,r1,r2   ;r0 = r1+r2
+	ADDS r0,r1,r2   ;r0 = r1+r2 also the condition flags are set
+
+    Exit()<
+
+    in ARM 32-Bit the first four bits(0000) are a combination of condition flags
+
+    Import Img()>
+
+       |BIn| |Struct Name|				|Instruct|
+	0000:'EQ'(Equal)				(z set)
+	0001:'NE'(Not Equal)    			(z clear)
+	0010:'CS'(Carry Set)    			(c set)
+	0101:'VS':(OverFlow set)			(v set)
+	1000:'HI'(unsigned High)			(c set or z clear)
+	1001:'LS'(Unsigned Lower or Same)		(c clear or z set)
+	1010'GE'(Signed Greater than or Equal to)      (c = v)
+	1011:'LT'(Signed Less Than)			(c != v)
+	1100:'GT'(Signed Greater Than)			(z=0 and n = v)
+	1101:'LE'(Signed Less Than Equal to)		(z = 1 or n!=v)
+	1110:'AL'(Always)
+
+    Exit()<
+
+    The Good thing about ARM is that almost all instruction can come with a condition:
+	one of the instructions uptop from the img
+	just make it a suffix
+
+*Branch instructions:
+   
+    The Branch instruction look like this:
+	B(<Condition>)label	;branch to label
+	BL(<condition>)subroutine	;branchlabel to subroutineLink
+
+    Branch instruction creates a branch that is offsetted to the Program Counter
+    BranchLiink gives a subroutine to the branch and links it to the PC-4:
+	Then writes from PC-4 to the Linker Register
+	The PC is replaced by the subroutine of the BL
+	When this is over it returns the saved return address to the r14 Link register
+#most processors saves this return address into the Stack but ARM saves it into a regi(r14)
+    Everytime you BL you change the conditon of theLR best way to handle this is to:
+	add 's' to the instruction so it can reset to the orginal conditions
+
+*Math ops:
+    
+    Syntax of the ops is:
+	<Ooperation>{<condition>}{S} Rd,Rn, operand2:
+	    rd = register destination
+	    rn = this is the first operand and its always a register
+	    operand2 = what ever else you gone add
+	    the 'Barrel Shifter' always send the first operand to the 'ALU'(Arithmic Logic Unit)
+
+*Comparison Operations:
+    CMP: Operand1-Operand2, results not written
+    TST: Operand1 AND Operand2, results not written
+    TEQ: Operand1 EOR Operand2, results not written
+
+    Comparison Operand update condition flags in the status register:
+	can also be used as condition in subsequnt instructions
+
+    Import Ex()>
+
+	CMP r0,r1	;this sets the condition bits in CPSR r0-r1
+	TSTEQ r2,#5	;test 2r and r5 for equal and set z in  CPSR
+    
+    Exit()<
+
+*Logical Operations:
+    
+    AND: Operand1 AND Operand2		;bit-wise and
+    EOR: Operand1 EOR Operand2		;Bit Exculsive or
+    ORR: Operand1 OR Operand2		;bit wise or
+    BIC: Operand1 AND(Not Operand2)	;Bit wise clear
+
+*Data Movement Operations:
+
+     MOV Operand1, Operand2
+     MVN Operand1, (not)Operand2
+            
+*immediate Value and Barrel Shifter:
+
+    Barrel shifter is a built in ARM feature:
+	its like an auto bit-wise shift operator
+     there is not instruction set for  ARM that would shift bits
+#the  barrel does it along side with other instructions
+    Import Ex()>
+#these are examples of some of the instruction sets
+
+	LSL#1  #*shift left by 1 bit*#
+	RSR#2  #*shifts right 2 bits*#
+	ROR#4  #*swaps high and lower4 bits in the register*#																																						3th
+	
+    Exit()<
+
+    all arm instructions are 32-bits long,the instruction stream doesnt count as data:
+	this stream can cause a little overflow if you can play wit the bits the right way
+    These barrell shift makes it easier to move almost any 32-bit value into a register
+
+*Multiply Instruction:
+
+    MUL(<condition>){S}Rd,Rm,Rs		; Rd = Rm*Rs
+    MLA(<condition>){S}Rn,Rd,Rn,RS	; Rd = (Rd * Rn) + Rs
+
+*Load and Store Instructions:
+    The ARM Processor doesnt really suppoprt memory to memory data processsing Operation:
+	Before starting the processor it must be loaded with instructions first
+	ARM got 3 sets of instructions that it must intreract with:
+	    (1)Single Register Data Transfer(LDR\STR)
+	    (2)Block Data Transfer(LDM\STM)
+	    (3)Single Data Swap(SWP)
+
+#*These instruction hold basic word and bytes
+
+	LDR\STR\LDRB\STRB
+
+*#
+	
+*Base Register:
+
+    Basically where the addresss for something is:
+	Sometimes youll get a pre\post-fix addresss but the base reg is where the address is
+
+*Block Data Transfer:
+
+    The base reg determine the local, but 4 modes:,
+	(1)Decrement
+	(2)Increament
+	(3)Inclusive
+	(4)Exclusive     
+    Another way to transfer is to append '!', to the instructions
+#this helps ARM chips be faster and good for embedded systems
+#the instructions order dont matter the high instructions will go to the high regs and vice versa
+
+*Stack Operations:
+
+    This is basically where instructions find their order,
+    This is where data is pull and pushed
+    There are 2 pointers here:
+	(1)Base Pointer which points to the bottem
+	(2)Stack Pointer which points to what needs to be popped, pushed
+    
+    'Decsending' is where the stack shrinks twoards the memory and the last pushed memory is at the lowest address
+    'Ascending' is where the stack grows to the memory
+     ARM Processor supports both
+     Arm allows it stack pointer to point to the last address(full stack),
+     or the next occupied stack(empty stack)
+     Stack Operations are implemented by the STM/LDM:
+	stack type is determined by the postfix:
+	    STMFD/LDMFD: Full Descending Stack
+	    STMFA/LDMFA: Full Ascending Stack
+	    STMED/LDMED: Empty Descending Stack
+	    STMEA/LDMEA: Empty Ascending Stack
+#full ascending stack are the main practivcal use. No one really use Descending
