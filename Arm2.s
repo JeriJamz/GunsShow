@@ -3,10 +3,12 @@
 	.text
 	.global start
 @how do I take in input from the user, think thats in later chapers
-loop:	stmfd sp!, {r0-r2,lr} //gonna use these to make the loop
+loop:	stmfd sp!, {r0,lr} //gonna use these to make the loop
 	mov r0, #0
-	ldrs r1, r1, #4 //incrementation
-	cmp r0, #0//idk if eq2 0
+	movneq r0, #4
+	ldrs r0, r0, #4 //incrementation
+	cmp r0, #4//idk if eq2 0
+	tsteq r0, #4
 	bne loop//this is the goto
-	ldmfd sp!,{r0-r1,pc} 
+	ldmfd sp!,{r01,pc} 
 	
