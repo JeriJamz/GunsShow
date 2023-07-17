@@ -16,8 +16,10 @@ loop:	ldr r3, r1 #4//this is anincrementation
 	bne loop //goto spegatti
 	ldr r4, =RESULTS//r4 is loaded
 	str r0,[r4]
-	lmdfdsp!, {r0-r4, pc}
-mal:	ldr r5, #6
+	lmdfd sp!, {r0-r4, pc}
+mal:	stmfd sp!,{r5-r7, lr}
+	ldr r5, #6
 	ldr r6,#4
 	ldr r7, =SUM
 	MULS =SUM,r5,r6
+	lmdfd sp!,{r5-r7,pc}//my bad trying to save the register before it takes this data and make sure it doesnt reset the whole thing
