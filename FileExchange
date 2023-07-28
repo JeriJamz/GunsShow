@@ -5,7 +5,8 @@ start:
     bl letsTryandGrabNput
 stop:
 letsTryandGrabNput://Im finna have to google this
-    bl Console
+        bl Console
+        bl UsrNput
     /*
     Console://def finna tweak stack overflow. i aint got my book or i can fuckin .data wheres my uckin book
         mov r3, #0
@@ -22,6 +23,8 @@ letsTryandGrabNput://Im finna have to google this
                         .message//i dont have to count bit for strings in arm?!?!?!
                             "Welcome, yada, what file you looking for?"
                 .stop//?
+        UsrNput:
+                
 lmdfd, sp!{r0-r4}
     
 
