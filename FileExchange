@@ -1,0 +1,23 @@
+    .text
+    .global start
+start:
+    stmfd sp!,{r0-r4}
+    bl letsTryandGrabNput
+stop:
+letsTryandGrabNput://Im finna have to google this
+    bl Console
+    
+    Console:
+        mov r3, #0
+        mov, r4, #5
+            loop1:
+                @ this gone print
+                mov r7, #4//syscall write
+                mov r0, #1  //output to the moniter
+                
+
+    lmdfd, sp!{r0-r4}
+    
+
+
+
