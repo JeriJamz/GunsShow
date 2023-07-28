@@ -1,4 +1,6 @@
     .text
+    .global Size
+    .global Nput
     .global start
 start:
     stmfd sp!,{r0-r4}
@@ -24,7 +26,15 @@ letsTryandGrabNput://Im finna have to google this
                             "Welcome, yada, what file you looking for?"
                 .stop//?
         UsrNput:
-                
+
+fileS:
+        Size:        .word 7,7//two-bit this should be a decent file size(i think this the file size)
+        cmp Size, Req//this should compare the list name which im calling size to the request
+        tst Size, Req//this should give me an add factor I dont think I need the cmp now
+        bne listDir
+listDir:
+        cmp
+
 lmdfd, sp!{r0-r4}
     
 
