@@ -6,8 +6,8 @@ start:
 stop:
 letsTryandGrabNput://Im finna have to google this
     bl Console
-    
-    Console:
+    /*
+    Console://def finna tweak stack overflow. i aint got my book or i can fuckin .data wheres my uckin book
         mov r3, #0
         mov, r4, #5
             loop1:
@@ -15,8 +15,14 @@ letsTryandGrabNput://Im finna have to google this
                 mov r7, #4//syscall write
                 mov r0, #1  //output to the moniter
                 
+/*
 
-    lmdfd, sp!{r0-r4}
+        Console:
+                .data
+                        .message//i dont have to count bit for strings in arm?!?!?!
+                            "Welcome, yada, what file you looking for?"
+                .stop//?
+lmdfd, sp!{r0-r4}
     
 
 
