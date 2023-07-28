@@ -1,6 +1,7 @@
     .text
     .global Size
     .global Nput
+    .global Req
     .global start
 start:
     stmfd sp!,{r0-r4}
@@ -33,7 +34,20 @@ fileS:
         tst Size, Req//this should give me an add factor I dont think I need the cmp now
         bne listDir
 listDir:
-        cmp
+        cmp Req,Size
+        eq Req,Size
+        ldr Fetcher,=Req
+        ldr Fetcher, [Req]
+        .data
+            .message
+                Fetcher
+            .stop
+        ne req,Size
+        .data
+            .message
+                "Thats not in here"
+                mov r0, #1//this this print output idk.
+            
 
 lmdfd, sp!{r0-r4}
     
