@@ -2,6 +2,8 @@
 	.global start
 start:  ldr sp, =stack_top //gonna remember ldr
 	bl sum //branch link sum(call sum)
+ 	bl loop
+  	bl mal//should call
 stop:   b  stop//some how this is a loop
 sum: //int sum() will add the total of an array. ion think this it
 	stmfd sp!, {r0-r4, lr}//it does do that
