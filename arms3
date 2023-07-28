@@ -1,0 +1,13 @@
+//wish me luck
+    .text
+    .global start
+start://this is gone be a ride
+    stmfd sp!,{r0-r4,lr}//open my stack
+    bl//be back got an idea
+stop:
+func:
+    ne r0, r1 //this should comapre x != y
+    cmp r2, r1//compare these two
+    ldr r2, =r1//this should point(pointer) r2 at r1
+    add r2,r2 #1//this should incremant 1
+    lmdfd sp!,{r0-r2,pc}//close my stack
