@@ -9,7 +9,9 @@ SECTIONS{
     .=ALLIGN(8)//...
       .=.10000//4kb lets seem how small we can make this
     stack_top =.;//make sure the bits link to this command signle
-    NputVali{*{NputVali}}
-
+    stack_top =.;//make sure the bits link to this command signle
+    NputVali{*(NputVali)}
+    .end{*(end)}
+    .stop{*(stop)}
 
 }
