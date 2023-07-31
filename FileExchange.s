@@ -19,7 +19,7 @@ letsTryandGrabNput://Im finna have to google this
                 mov r7, #4//syscall write
                 mov r0, #1  //output to the moniter
                 
-/*
+*/
 
         Console:
                 .data
