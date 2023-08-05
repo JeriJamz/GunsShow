@@ -35,10 +35,9 @@ listDir:
 	eq listDadir, Req
 	.data
 		.message
-			file
+			fileS
 		.stop	
 	
-
 
 chDir:
       cmp 
