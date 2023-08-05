@@ -4,22 +4,16 @@
     .global Req
     .global start
 start:
-    stmfd sp!,{r0-r4}
+    stmfd sp!,{r7-r11}
     bl letsTryandGrabNput
-stop:
+stop
+
+
+
 letsTryandGrabNput://Im finna have to google this
         bl Console
         bl UsrNput
-    /*
-    Console://def finna tweak stack overflow. i aint got my book or i can fuckin .data wheres my uckin book
-        mov r3, #0
-        mov, r4, #5
-            loop1:
-                @ this gone print
-                mov r7, #4//syscall write
-                mov r0, #1  //output to the moniter
-                
-*/
+	bl listDadir
 
         Console:
                 .data
@@ -27,8 +21,8 @@ letsTryandGrabNput://Im finna have to google this
                             "Welcome, yada, what file you looking for?"
                 .stop//?
         UsrNput:
-		ldr r1//lets see if we can get this to point to user data? keyboard data
-		ldr r1, =
+		ldr r7//lets see if we can get this to point to user data? keyboard data
+		ldr r7, =
 
 
 fileS:
@@ -37,23 +31,42 @@ fileS:
         tst Size, Req//this should give me an add factor I dont think I need the cmp now
         bne listDir
 listDir:
-      	  cmp Req,Size
-        eq Req,Size
-        ldr Fetcher,=Req
-        ldr Fetcher, [Req]
-        .data
-            .message
-                "Fetcher"
-            .stop
-        ne req,Size
-        .data
-            .message
-                "Thats not in here"
-                mov r0, #1//this this print output idk.
-            .end
+	cmp Req, listDadir
+	eq listDadir, Req
+	.data
+		.message
+			file
+		.stop	
+	
+
+
 chDir:
       cmp 
       bne //they match		
 
 
-lmdfd, sp!{r0-r4}
+lmdfd, sp!{r7-r11}
+
+
+
+
+term:
+	push cs
+	pop  ds
+	mov  si,156h
+
+listDadir:
+	loadsb
+	mov ah, 0Eh
+	mov bh,0
+	mov bl, 7
+	int 10h
+	dec cx
+	cmp cx,0
+	jne looper
+
+	mov ah, 004c
+	int 21h
+
+	db 'dir'
+	
