@@ -1,0 +1,46 @@
+#ok taking pointers on how some C works in Arm
+#*------------------------------------------
+This is the C code
+--------------------------------------------*#
+
+extern int g(int x, int y);//extern func
+
+int func(int a, int b, int c, int d, int e, int f ){ //making an obj
+
+    int x, y, z; //local variables
+    x = 1; y = 2; z = 3; // access the variables
+    g(x,y); //calling g(x,y)
+    return a + e //return value
+
+}
+
+#*-------------------------------------------
+This is the Arms Code
+---------------------------------------------*#
+
+	.global func
+func:
+   #make a stack frame
+    stmfd sp!, {fp,lr} #* save lr fp in the stack
+    add fp, sp, #4 #*FP points at the lr. Also I think the value will be four 
+    #shift sp downward 8(4 - bytes) slots for local and temps
+    sub sp, sp, #32
+    #save r0-r3 (parameters a,b,c,d) in stack at offset -fp
+    str r0, [fp, #-24]#*a
+    str r1, [fp, #-28]#*b
+    str r2, [fp, #-32]#*c
+    str r3, [fp, #-36]#*d saves the variables
+    #execute access the variables
+    mov r3, #1
+    str r3,[fp, #-8] //x = 1 at -8(fp)
+    mov r3, #2
+    str r3, [fp, #-12]
+    bl g #*this calls the g function
+    #compute a + e
+    ldr r2, [fp, #-24] #*a 
+    ldr r3, [fp, #4] #*e
+    add r3,r2,r3 #* r3 = a+e
+    mov r0,r3 #*return value is stored in r0
+    #return to caller
+    sub sp,fp, # 4 #*stuff from the sp is saved into fp
+    ldmfd sp!, {fp,pc}
