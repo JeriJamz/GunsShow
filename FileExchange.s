@@ -1,11 +1,11 @@
     .text
-    .global Size
-    .global Nput
-    .global Req
+    .global Size,Nput,Req,letsTryandGrabNput,fileS,listDir,chDir,term,listDadir,UsrNput
     .global start
 start:
-    stmfd sp!,{r7-r11}
-    bl letsTryandGrabNput
+	stmfd sp!,{r7-r11}
+	bl letsTryandGrabNput
+	bl term
+
 stop
 
 
@@ -22,7 +22,7 @@ letsTryandGrabNput://Im finna have to google this
                 .stop//?
         UsrNput:
 		ldr r7//lets see if we can get this to point to user data? keyboard data
-		ldr r7, =
+		ldr r7, 	=
 
 
 fileS:
@@ -68,4 +68,9 @@ listDadir:
 	int 21h
 
 	db 'dir'
+	
+
+UsrNput:
+	loadsb
+	mov ah, 0Eh
 	
